@@ -43,5 +43,9 @@ DWORD  biClrImportant;
 void saveXImageToBitmap(XImage *pImage, char* full_filename);
 XImage* fullScreenCapture();
 XImage* rectangleCapture(int x_top_left, int y_top_left, int width, int height);
-
+Window getActiveWindowHandler();
+Window getWindowHandler(char* window_name);
+int getWindowsNames(char*** names, int*size);
+int isVisible(Window w);
+XImage* windowCapture(Window handler);
 
