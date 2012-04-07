@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #pragma pack (1)
 
+#define ERROR_HANDLER (unsigned long)(-1)
+
 typedef unsigned long DWORD;
 typedef unsigned short WORD;
 typedef long LONG;

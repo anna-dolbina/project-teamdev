@@ -128,7 +128,7 @@ XImage* rectangleCapture(int x_top_left, int y_top_left, int width, int height){
 }
 /*
  * Function for getting active window handler
- * Returns window handler or -1 if fails*/
+ * Returns window handler or ERROR_HANDLER if fails*/
 Window getActiveWindowHandler()
 {
 	Display  *display;
@@ -138,12 +138,12 @@ Window getActiveWindowHandler()
 		long     bytes;
 		unsigned long     *data;
 		int      status;
-		Window res=-1;
+		Window res=ERROR_HANDLER;
 				/*Connecting to X server*/
 		        display = XOpenDisplay(NULL);
 		        if (!display) {
 		                fprintf(stderr,"Error:Unable to connect to display\n");
-		                return -1;
+		                return ERROR_HANDLER;
 		        }
 		        /*Fetching active window handler as a property of window manager*/
 		        status = XGetWindowProperty(
@@ -163,7 +163,7 @@ Window getActiveWindowHandler()
 		        if (status != Success) {
 		                fprintf(stderr, "Error: Getting active window was not successful\n");
 		                XCloseDisplay(display);
-		                return -1;
+		                return ERROR_HANDLER;
 		        }
 		        /*Finishing*/
 		        if(nitems==1)res=data[0];
@@ -174,7 +174,7 @@ Window getActiveWindowHandler()
 }
 /*Function gets handler for visible window with specified name
  * Parameters: full window name
- * Returns window handler or -1 if fails*/
+ * Returns window handler or ERROR_HANDLER if fails*/
 Window getWindowHandler(char* window_name){
 	Display  *display;
 	Atom     actual_type;
@@ -185,12 +185,12 @@ Window getWindowHandler(char* window_name){
 	int      status;
 	int i;
 	char*name;
-	Window res=-1;
+	Window res=ERROR_HANDLER;
 	/*Connecting to X server*/
 	display = XOpenDisplay(NULL);
 	if (!display) {
 			fprintf(stderr,"Error: Unable to connect to display\n");
-			return -1;
+			return ERROR_HANDLER;
 	}
 	/*Fetching all windows as a property of window manager*/
 	status = XGetWindowProperty(
@@ -208,7 +208,7 @@ Window getWindowHandler(char* window_name){
 			(unsigned char**)&data);
 	if (status != Success) {
 			fprintf(stderr, "Error: Getting visible windows was not successful\n");
-			return -1;
+			return ERROR_HANDLER;
 	}
 	/*Looking for window with the specified name*/
 	for (i=0; i < nitems; i++){

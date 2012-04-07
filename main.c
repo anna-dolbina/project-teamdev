@@ -31,7 +31,7 @@ int main(int argc, char ** argv){
 		w=getWindowHandler(windows_names[i]);
 		printf("%d\t%d\t%s\n",i,(int)w,windows_names[i]);
 
-		if(w!=-1){
+		if(w!=ERROR_HANDLER){
 			img=windowCapture(w);
 			if(img!=NULL)
 			{
@@ -41,6 +41,7 @@ int main(int argc, char ** argv){
 			}
 		}
 	}
+
 	for(i=0;i<size;i++){
 		free(windows_names[i]);
 	}
