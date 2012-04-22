@@ -7,26 +7,34 @@
 
 #include "shot.h"
 int main(int argc, char ** argv){
-	XImage* img;
-	Window w;
+	XImage* img,*img1;
+	/*Window w;
 	char** windows_names;
 	int size;
 	int i;
-	char filename[20];
-	/*img=fullScreenCapture();
+	char filename[20];*/
+	img=fullScreenCapture();
 	if(img!=NULL)
 	{
 		saveXImageToBitmap(img,"fullscreen1.bmp");
+		img1=resizeBilinear(img,800,600);
+		if(img1!=NULL)
+		{
+			saveXImageToBitmap(img1,"fullscreen1_resized.bmp");
+			XDestroyImage(img1);
+		}
+		else fprintf(stderr,"No resized image\n");
+
 		XDestroyImage(img);
 	}
 
-	img=rectangleCapture(15,50,320,240);
+	/*img=rectangleCapture(15,50,320,240);
 	if(img!=NULL)
 	{
 		saveXImageToBitmap(img,"rectangle1.bmp");
 		XDestroyImage(img);
 	}*/
-	getWindowsNames(&windows_names,&size);
+	/*getWindowsNames(&windows_names,&size);
 	for(i=0;i<size;i++){
 		w=getWindowHandler(windows_names[i]);
 		printf("%d\t%d\t%s\n",i,(int)w,windows_names[i]);
@@ -45,7 +53,7 @@ int main(int argc, char ** argv){
 	for(i=0;i<size;i++){
 		free(windows_names[i]);
 	}
-	free(windows_names);
+	free(windows_names);*/
 /*
 	img=windowCapture(getActiveWindowHandler());
 	if(img!=NULL)

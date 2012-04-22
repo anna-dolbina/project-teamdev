@@ -10,6 +10,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <math.h>
 #pragma pack (1)
 
 #define ERROR_HANDLER (unsigned long)(-1)
@@ -50,4 +52,5 @@ Window getWindowHandler(char* window_name);
 int getWindowsNames(char*** names, int*size);
 int isVisible(Window w);
 XImage* windowCapture(Window handler);
+XImage* resizeBilinear(XImage* src,int new_width, int new_height);
 
