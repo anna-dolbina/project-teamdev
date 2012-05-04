@@ -5,15 +5,21 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../main.c \
-../shot.c 
+../shot.c \
+../windows.c \
+../ximage_processing.c 
 
 OBJS += \
 ./main.o \
-./shot.o 
+./shot.o \
+./windows.o \
+./ximage_processing.o 
 
 C_DEPS += \
 ./main.d \
-./shot.d 
+./shot.d \
+./windows.d \
+./ximage_processing.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
