@@ -17,7 +17,9 @@
 #include <math.h>
 #pragma pack (1)
 
-
+#ifndef MASK
+#define MASK(value,mask,roffset) ((value&mask)>>roffset)
+#endif /*MASK*/
 typedef unsigned long DWORD;
 typedef unsigned short WORD;
 typedef long LONG;

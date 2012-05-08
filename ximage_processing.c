@@ -157,8 +157,10 @@ XImage* resizeBicubic(XImage* src,int new_width, int new_height){
 	unsigned long size,i,row_counter,column_counter;
 	int row_length=new_width*4;
 	double hratio,vratio,x_coef,y_coef;
-	int x_low,x_high,x_lower,x_higher,y_low,y_high,y_lower,y_higher;
-	unsigned long r_comp,g_comp,b_comp;
+	int x_low,x_high,x_lower,x_higher,y_low,y_high,y_lower,y_higher,j;
+	int r_comp,g_comp,b_comp;
+	int points[4][4],p[4];
+	double rcoef[4],gcoef[4],bcoef[4];
 	/* Allocating memory for new image */
 	size = new_width * new_height * 4;
 	data = (char*)malloc(size);
@@ -178,45 +180,100 @@ XImage* resizeBicubic(XImage* src,int new_width, int new_height){
 		/*Calculating indexes*/
 		x_low=(int)floor(hratio);
 		x_high=(int)ceil(hratio);
-		x_lower=x_low-1;
-		x_higher=x_high+1;
-
 
 		y_low=(int)floor(vratio);
 		y_high=(int)ceil(vratio);
-		y_lower=y_low-1;
-		y_higher=y_high+1;
 
 		x_low=(x_low>=src->width)?(src->width)-1:x_low;
 		y_low=(y_low>=src->height)?(src->height)-1:y_low;
-		x_lower=(x_lower>=src->width)?(src->width)-1:x_lower;
-		y_lower=(y_lower>=src->height)?(src->height)-1:y_lower;
-		x_lower=(x_lower<0)?0:x_lower;
-		y_lower=(y_lower<0)?0:y_lower;
-
 		x_high=(x_high>=src->width)?(src->width)-1:x_high;
 		y_high=(y_high>=src->height)?(src->height)-1:y_high;
-		x_higher=(x_higher>=src->width)?(src->width)-1:x_higher;
-		y_higher=(y_higher>=src->height)?(src->height)-1:y_higher;
+
+		x_lower=(x_low>0)?x_low-1:0;
+		y_lower=(y_low>0)?y_low-1:0;
+		x_higher=(x_high==src->width)?(src->width):x_high+1;
+		y_higher=(y_high==src->height)?(src->height):y_high+1;
+
 
 		/*Calculating coefficients*/
 		x_coef=fmod(hratio,x_low);
 		y_coef=fmod(vratio,y_low);
+		/*Loading points*/
+		points[0][0]=XGetPixel(src,x_lower,y_lower);
+		points[0][1]=XGetPixel(src,x_lower,y_low);
+		points[0][2]=XGetPixel(src,x_lower,y_high);
+		points[0][3]=XGetPixel(src,x_lower,y_higher);
+
+		points[1][0]=XGetPixel(src,x_low,y_lower);
+		points[1][1]=XGetPixel(src,x_low,y_low);
+		points[1][2]=XGetPixel(src,x_low,y_high);
+		points[1][3]=XGetPixel(src,x_low,y_higher);
+
+		points[2][0]=XGetPixel(src,x_high,y_lower);
+		points[2][1]=XGetPixel(src,x_high,y_low);
+		points[2][2]=XGetPixel(src,x_high,y_high);
+		points[2][3]=XGetPixel(src,x_high,y_higher);
+
+		points[3][0]=XGetPixel(src,x_higher,y_lower);
+		points[3][1]=XGetPixel(src,x_higher,y_low);
+		points[3][2]=XGetPixel(src,x_higher,y_high);
+		points[3][3]=XGetPixel(src,x_higher,y_higher);
+		/*Filling coefficient array*/
+		for(j=0;j<4;j++)
+		{
+			p[0]=MASK(points[0][j],src->red_mask,16);
+			p[1]=MASK(points[1][j],src->red_mask,16);
+			p[2]=MASK(points[2][j],src->red_mask,16);
+			p[3]=MASK(points[3][j],src->red_mask,16);
+
+			rcoef[j]=p[1] + 0.5 * x_coef*
+					(p[2] - p[0] + x_coef*
+					(2.0*p[0] - 5.0*p[1] + 4.0*p[2] - p[3] + x_coef*
+					(3.0*(p[1] - p[2]) + p[3] - p[0])));
+
+
+			p[0]=MASK(points[0][j],src->green_mask,8);
+			p[1]=MASK(points[1][j],src->green_mask,8);
+			p[2]=MASK(points[2][j],src->green_mask,8);
+			p[3]=MASK(points[3][j],src->green_mask,8);
+
+			gcoef[j]=p[1] + 0.5 * x_coef*
+					(p[2] - p[0] + x_coef*
+					(2.0*p[0] - 5.0*p[1] + 4.0*p[2] - p[3] + x_coef*
+					(3.0*(p[1] - p[2]) + p[3] - p[0])));
+
+
+			p[0]=MASK(points[0][j],src->blue_mask,0);
+			p[1]=MASK(points[1][j],src->blue_mask,0);
+			p[2]=MASK(points[2][j],src->blue_mask,0);
+			p[3]=MASK(points[3][j],src->blue_mask,0);
+
+			bcoef[j]=p[1] + 0.5 * x_coef*
+					(p[2] - p[0] + x_coef*
+					(2.0*p[0] - 5.0*p[1] + 4.0*p[2] - p[3] + x_coef*
+					(3.0*(p[1] - p[2]) + p[3] - p[0])));
+
+		}
 		/*Calculating color components*/
-		r_comp= ((XGetPixel(src,x_low,y_low)&src->red_mask)>>16)*(1-x_coef)*(1-y_coef)+
-				((XGetPixel(src,x_high,y_low)&src->red_mask)>>16)*x_coef*(1-y_coef)+
-				((XGetPixel(src,x_low,y_high)&src->red_mask)>>16)*(1-x_coef)*y_coef+
-				((XGetPixel(src,x_high,y_high)&src->red_mask)>>16)*x_coef*y_coef;
+		r_comp= rcoef[1] + 0.5 * y_coef*(
+				rcoef[2] - rcoef[0] + y_coef*(
+				2.0*rcoef[0] - 5.0*rcoef[1] + 4.0*rcoef[2] - rcoef[3] + y_coef*(
+				3.0*(rcoef[1] - rcoef[2]) + rcoef[3] - rcoef[0])));
+		r_comp=(r_comp<0)?0:r_comp;
+		r_comp=(r_comp>255)?255:r_comp;
+		g_comp= gcoef[1] + 0.5 * y_coef*(
+				gcoef[2] - gcoef[0] + y_coef*(
+				2.0*gcoef[0] - 5.0*gcoef[1] + 4.0*gcoef[2] - gcoef[3] + y_coef*(
+				3.0*(gcoef[1] - gcoef[2]) + gcoef[3] - gcoef[0])));
+		g_comp=(g_comp<0)?0:g_comp;
+		g_comp=(g_comp>255)?255:g_comp;
 
-		g_comp= ((XGetPixel(src,x_low,y_low)&src->green_mask)>>8)*(1-x_coef)*(1-y_coef)+
-				((XGetPixel(src,x_high,y_low)&src->green_mask)>>8)*x_coef*(1-y_coef)+
-				((XGetPixel(src,x_low,y_high)&src->green_mask)>>8)*(1-x_coef)*y_coef+
-				((XGetPixel(src,x_high,y_high)&src->green_mask)>>8)*x_coef*y_coef;
-
-		b_comp= ((XGetPixel(src,x_low,y_low)&src->blue_mask)>>0)*(1-x_coef)*(1-y_coef)+
-				((XGetPixel(src,x_high,y_low)&src->blue_mask)>>0)*x_coef*(1-y_coef)+
-				((XGetPixel(src,x_low,y_high)&src->blue_mask)>>0)*(1-x_coef)*y_coef+
-				((XGetPixel(src,x_high,y_high)&src->blue_mask)>>0)*x_coef*y_coef;
+		b_comp= bcoef[1] + 0.5 * y_coef*(
+				bcoef[2] - bcoef[0] + y_coef*(
+				2.0*bcoef[0] - 5.0*bcoef[1] + 4.0*bcoef[2] - bcoef[3] + y_coef*(
+				3.0*(bcoef[1] - bcoef[2]) + bcoef[3] - bcoef[0])));
+		b_comp=(b_comp<0)?0:b_comp;
+		b_comp=(b_comp>255)?255:b_comp;
 		/*Setting color*/
 		data[i]=(char)b_comp;
 		data[i+1]=(char)g_comp;

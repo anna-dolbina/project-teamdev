@@ -36,7 +36,7 @@ int main(int argc, char ** argv){
 	if(img!=NULL)
 	{
 		saveXImageToBitmap(img,"rectanglecapture_original.bmp");
-		img1=resizeBilinear(img,800,600);
+		img1=resizeBicubic(img,800,600);
 		if(img1!=NULL)
 		{
 			saveXImageToBitmap(img1,"rectanglecapture_800x600.bmp");
@@ -44,14 +44,14 @@ int main(int argc, char ** argv){
 		}
 		else fprintf(stderr,"No resized image\n");
 
-		img1=resizeBilinear(img,1280,1024);
+		img1=resizeBicubic(img,1280,1024);
 		if(img1!=NULL)
 		{
 			saveXImageToBitmap(img1,"rectanglecapture_1280x1024.bmp");
 			XDestroyImage(img1);
 		}
 		else fprintf(stderr,"No resized image\n");
-		img1=resizeBilinear(img,200,150);
+		img1=resizeBicubic(img,200,150);
 		if(img1!=NULL)
 		{
 			saveXImageToBitmap(img1,"rectanglecapture_200x150.bmp");
@@ -59,7 +59,7 @@ int main(int argc, char ** argv){
 		}
 		else fprintf(stderr,"No resized image\n");
 
-		img1=resizeBilinear(img,280,210);
+		img1=resizeBicubic(img,280,210);
 		if(img1!=NULL)
 		{
 			saveXImageToBitmap(img1,"rectanglecapture_280x210.bmp");
