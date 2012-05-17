@@ -8,10 +8,10 @@ It has functions for capturing:
 Also these screenshots can be resized and stored as uncompressed BMP files.
 Library uses Xlib functions, so check if you have X11 library on your computer. C Math library is also necessary.
 
-src:
+Directory src:
 contains source files for library and a makefile for creating a dynamic-link library "libshot.so"
 
-example:
+Directory example:
 contains a ready-to-use library "libshot.so", an example of main with usage of functions from this library, necessary headers and a corresponding makefile for creating a binary.
 
 Read help.txt to learn how to use functions from libshot.so

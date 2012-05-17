@@ -1,0 +1,109 @@
+This is a help file for using my libshot.so
+Here you can find some useful examples.
+It can be helpful if you are trying to use libshot.so for the first time.
+
+0. Include these headers to use functions from libshot:
+
+#include "shot.h"
+#include "ximage_processing.h"
+#include "windows.h"
+
+You don't need to include Xlib headers by yourself: they are already included in given above. Also, don't forget to append -lshot when using gcc. Library can be stored in default locations (such as /lib/ or /usr/lib/) or in the directory where gcc can find it.
+
+--1. Capturing a full-screen image.
+To do this, create a pointer to XImage (this structure comes from Xlib and is used for manipulating images):
+
+XImage* img;
+
+Then do a screenshot with corresponding function:
+
+img=fullScreenCapture();
+
+If everything worked fine, the pointer will contain an address of the XImage structure with data. In other cases, pointer will be NULL and information about the mistake will be put in stderr.
+
+After that, you may want to save the result as a BMP file. For this, write following:
+
+if(img!=NULL)
+{
+	saveXImageToBitmap(img,"fullscreen1.bmp");/*this creates a BMP file*/
+	XDestroyImage(img);/*if the structure isn't necessary any more, free the memory*/
+}
+
+A corresronding file will appear at the location.
+
+--2. Capturing a rectangular part of the screen
+It can be done as in 1, just use rectangleCapture instead of fullScreenCapture:
+
+XImage* img;
+img=rectangleCapture(15,50,320,240);/*parameters are: the top left corner of rectangle, its width and height*/
+if(img!=NULL)
+{
+	saveXImageToBitmap(img,"rectangle1.bmp");/*this creates a BMP file*/
+	XDestroyImage(img);/*if the structure isn't necessary any more, free the memory*/
+}
+
+--3. Capturing contents of visible windows
+The window for capturing is defined by its handler. The handler for a window can be got, if you know the full name of the window. The full names of all windows on your display can be obtained as follows:  
+
+Window w;/*a variable to store the handler*/
+char** windows_names;/*a variable to store all windows names*/
+int size;/*a variable to store size of the array above*/
+int i;/*just a counter*/
+
+getWindowsNames(&windows_names,&size);/*here windows_names and size are return parameters*/
+
+Then you may work with windows_names as with the usual array of strings.
+
+for(i=0;i<size;i++)
+{
+	printf("%d\t%s\n",i,windows_names[i]);
+}
+
+Next, we need to get a corresponding handler and do the screenshot. The next example shows you how to capture contents of all windows on your display.
+
+for(i=0;i<size;i++){
+	w=getWindowHandler(windows_names[i]);
+
+	if(w!=ERROR_HANDLER){
+		img=windowCapture(w);
+		if(img!=NULL)
+		{
+			/*here you can work with the captured image, for example, save it as BMP*/
+			XDestroyImage(img);/*don't forget to free memory after all!*/
+		}
+	}
+}
+Freeing memory of windows_names can be done as usual:
+
+for(i=0;i<size;i++)
+{
+	free(windows_names[i]);
+}
+free(windows_names);
+
+--4.Capturing active window contents
+You don't need to know the name of the active window to capture it. It can be got as follows:
+
+img=windowCapture(getActiveWindowHandler());
+
+Here, getActiveWindowHandler() returns a handler of an active window. No names are necessary, as you can see.
+Then, you may work with XImage, for example:
+
+if(img!=NULL)
+{
+	saveXImageToBitmap(img,"active1.bmp");/*this creates a BMP file*/
+	XDestroyImage(img);/*if the structure isn't necessary any more, free the memory*/
+}
+
+--5. Resizing the image
+There are two resizing algorithms implemented for XImage in the library, bilinear and bicubic interpolation. You may use both of them.
+If you have created a screenshot as XImage structure, you can get resized copies of it as follows:
+
+XImage *img1,*img2;
+img1=resizeBilinear(img,800,600);/* here the parameters are the source image and new width and height for it*/
+img2=resizeBicubic(img,800,600);/*parameter list is the same*/
+
+After that you can work with img1 and img2 as usual.
+
+
+If you still have questions, if you have found mistakes or something doesn't work right, you can write me at anna.dolbina@gmail.com. Please put "libshot" as the topic of your letter.

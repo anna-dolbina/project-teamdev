@@ -1,6 +1,11 @@
 /*
  * main.c
  *
+ *  This file is an example of using libshot.so
+ *
+ *  Here you can see and test several examples of usage
+ *  Please read help.txt for detailed explanation
+ *
  *  Created on: 22.03.2012
  *      Author: anna
  */
@@ -12,16 +17,19 @@
 
 int main(int argc, char ** argv){
 	XImage* img,*img1;
-	/*Window w;
+	Window w;
 	char** windows_names;
 	int size;
 	int i;
-	char filename[20];*/
-	/*img=fullScreenCapture();
+	char filename[20];
+	
+
+	/*This part contains an example of capturing and resizing a full-screen image*/
+	img=fullScreenCapture();
 	if(img!=NULL)
 	{
 		saveXImageToBitmap(img,"fullscreen1.bmp");
-		img1=resizeBilinear(img,800,600);
+		img1=resizeBilinear(img,2048,1536);
 		if(img1!=NULL)
 		{
 			saveXImageToBitmap(img1,"fullscreen1_resized.bmp");
@@ -30,7 +38,9 @@ int main(int argc, char ** argv){
 		else fprintf(stderr,"No resized image\n");
 
 		XDestroyImage(img);
-	}*/
+	}
+
+	/*Here the rectangular part is captured, resized and stored*/
 
 	img=rectangleCapture(15,50,320,240);
 	if(img!=NULL)
@@ -43,34 +53,16 @@ int main(int argc, char ** argv){
 			XDestroyImage(img1);
 		}
 		else fprintf(stderr,"No resized image\n");
-
-		img1=resizeBicubic(img,1280,1024);
-		if(img1!=NULL)
-		{
-			saveXImageToBitmap(img1,"rectanglecapture_1280x1024.bmp");
-			XDestroyImage(img1);
-		}
-		else fprintf(stderr,"No resized image\n");
-		img1=resizeBicubic(img,200,150);
-		if(img1!=NULL)
-		{
-			saveXImageToBitmap(img1,"rectanglecapture_200x150.bmp");
-			XDestroyImage(img1);
-		}
-		else fprintf(stderr,"No resized image\n");
-
-		img1=resizeBicubic(img,280,210);
-		if(img1!=NULL)
-		{
-			saveXImageToBitmap(img1,"rectanglecapture_280x210.bmp");
-			XDestroyImage(img1);
-		}
-		else fprintf(stderr,"No resized image\n");
 		XDestroyImage(img);
 	}
-	/*getWindowsNames(&windows_names,&size);
-	for(i=0;i<size;i++){
+
+	/*Here is the example of capturing particular windows*/
+
+	getWindowsNames(&windows_names,&size);
+	for(i=0;i<size;i++)
+	{
 		w=getWindowHandler(windows_names[i]);
+
 		printf("%d\t%d\t%s\n",i,(int)w,windows_names[i]);
 
 		if(w!=ERROR_HANDLER){
@@ -87,14 +79,16 @@ int main(int argc, char ** argv){
 	for(i=0;i<size;i++){
 		free(windows_names[i]);
 	}
-	free(windows_names);*/
-/*
+	free(windows_names);
+
+	/*Example of capturing the contents of active window*/
 	img=windowCapture(getActiveWindowHandler());
 	if(img!=NULL)
 		{
 			saveXImageToBitmap(img,"active.bmp");
 			XDestroyImage(img);
-		}*/
+		}
+
 	return 0;
 
 }
