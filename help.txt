@@ -1,7 +1,7 @@
 This is a help file for using the library libshot.so
 Here you can find some useful examples.
 It can be helpful if you are trying to use libshot.so for the first time.
-
+===
 libshot.so is a C library for doing screenshots in Linux. 
 It has functions for capturing:
 - full screen;
